@@ -1,0 +1,160 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Top Trends Picks - Innovative marketing solutions to elevate your brand and drive results.">
+    <title>Top Trends Picks - Marketing Solutions</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <img src="logo.png" alt="Top Trends Picks Logo" class="logo">
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#services">Services</a>
+            <a href="#testimonials">Testimonials</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <img src="hero.jpg" alt="Marketing Solutions" class="hero-image">
+            <h1>Grow Your Business with Us</h1>
+            <p>Innovative marketing solutions to elevate your brand and drive results.</p>
+            <button class="cta-button">Get Started</button>
+        </section>
+
+        <section id="about" class="about">
+            <h2>About Us</h2>
+            <p>We are a passionate team dedicated to delivering top-notch marketing strategies that help businesses thrive in a competitive world.</p>
+            <img src="about.jpg" alt="Our Team" class="about-image">
+            <div class="about-grid">
+                <div class="about-item">
+                    <h3>Our Mission</h3>
+                    <p>To empower brands with innovative marketing solutions.</p>
+                </div>
+                <div class="about-item">
+                    <h3>Our Vision</h3>
+                    <p>To redefine digital success for businesses worldwide.</p>
+                </div>
+                <div class="about-item">
+                    <h3>Our Values</h3>
+                    <p>Integrity, creativity, and results-driven excellence.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="services">
+            <h2>Our Services</h2>
+            <p>Comprehensive marketing solutions tailored to your needs.</p>
+            <div class="service-grid">
+                <div class="service-item">
+                    <img src="service1.jpg" alt="Digital Marketing">
+                    <h3>Digital Marketing</h3>
+                    <p>Boost your online presence with SEO, PPC, and social media strategies.</p>
+                </div>
+                <div class="service-item">
+                    <img src="service2.jpg" alt="Content Creation">
+                    <h3>Content Creation</h3>
+                    <p>Engaging content that resonates with your audience.</p>
+                </div>
+                <div class="service-item">
+                    <img src="service3.jpg" alt="Branding">
+                    <h3>Branding</h3>
+                    <p>Create a memorable brand identity that stands out.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="testimonials" class="testimonials">
+            <h2>What Our Clients Say</h2>
+            <p>Hear from businesses we've helped succeed.</p>
+            <div class="testimonial-grid">
+                <div class="testimonial-item">
+                    <img src="testimonial1.jpg" alt="Jane Doe">
+                    <p>"Their strategies doubled our website traffic in just three months!"</p>
+                    <p><strong>Jane Doe, CEO</strong></p>
+                </div>
+                <div class="testimonial-item">
+                    <img src="testimonial2.jpg" alt="John Smith">
+                    <p>"The team delivered a brand identity that truly reflects our values."</p>
+                    <p><strong>John Smith, Founder</strong></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact">
+            <h2>Get in Touch</h2>
+            <p>Ready to grow? Let's talk!</p>
+            <form>
+                <input type="text" placeholder="Your Name">
+                <input type="email" placeholder="Your Email">
+                <textarea placeholder="Your Message"></textarea>
+                <button class="form-button">Send Message</button>
+            </form>
+            <p>Email: <a href="mailto:info@toptrendspicks.com">info@toptrendspicks.com</a></p>
+            <p>Phone: <a href="tel:+233597301883">+233597301883</a></p>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 Top Trends Picks. All rights reserved.</p>
+        <p>
+            <a href="#privacy">Privacy Policy</a>
+            <a href="#terms">Terms of Service</a>
+        </p>
+    </footer>
+
+    <script>
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelector(anchor.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
