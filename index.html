@@ -1,0 +1,117 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TopTrend Picks</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <img src="images/TopTrendPicksLogo.jpg" alt="TopTrend Picks Logo" class="logo">
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">Testimonials</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Grow Your Business with Us</h1>
+        <p>Innovative marketing solutions to elevate your brand and drive results.</p>
+        <button class="cta-button">Get Started</button>
+        <img src="images/hero-image.jpg" alt="Hero Image" class="hero-image">
+    </section>
+
+    <section class="about">
+        <h2>About Us</h2>
+        <p>We are a passionate team dedicated to delivering top-notch marketing strategies that help businesses thrive in a competitive world.</p>
+        <img src="images/about-image.jpg" alt="About Image" class="about-image">
+        <div class="about-grid">
+            <div class="about-item">Our Mission<br>To empower brands with innovative marketing solutions.</div>
+            <div class="about-item">Our Vision<br>To redefine digital success for businesses worldwide.</div>
+            <div class="about-item">Our Values<br>Integrity, creativity, and results-driven excellence.</div>
+        </div>
+    </section>
+
+    <section class="services">
+        <h2>Our Services</h2>
+        <p>Comprehensive marketing solutions tailored to your needs.</p>
+        <div class="service-grid">
+            <div class="service-item">Digital Marketing<br>Boost your online presence with SEO, PPC, and social media strategies.<br><img src="images/digital-marketing.jpg" alt="Digital Marketing"></div>
+            <div class="service-item">Content Creation<br>Engaging content that resonates with your audience.<br><img src="images/content-creation.jpg" alt="Content Creation"></div>
+            <div class="service-item">Branding<br>Create a memorable brand identity that stands out.<br><img src="images/branding.jpg" alt="Branding"></div>
+        </div>
+    </section>
+
+    <section class="testimonials">
+        <h2>What Our Clients Say</h2>
+        <p>Hear from businesses we've helped succeed.</p>
+        <div class="testimonial-grid">
+            <div class="testimonial-item">"Their strategies doubled our website traffic in just three months!"<br>Jane Doe, CEO<br><img src="images/jane-doe.jpg" alt="Jane Doe"></div>
+            <div class="testimonial-item">"The team delivered a brand identity that truly reflects our values."<br>John Smith, Founder<br><img src="images/john-smith.jpg" alt="John Smith"></div>
+        </div>
+    </section>
+
+    <section class="contact">
+        <h2>Get in Touch</h2>
+        <p>Ready to grow? Let's talk!</p>
+        <form>
+            <input type="text" placeholder="Name" required>
+            <input type="email" placeholder="Email" required>
+            <textarea placeholder="Message" required></textarea>
+            <button type="submit" class="form-button">Send Message</button>
+        </form>
+        <p>Email: info@toptrendpicks.com</p>
+        <p>Phone: +233597301883</p>
+    </section>
+
+    <footer>
+        <p>© 2025 Top Trends Picks. All rights reserved.</p>
+        <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+    </footer>
+</body>
+</html>
